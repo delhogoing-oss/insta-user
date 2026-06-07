@@ -25,9 +25,9 @@ def generate_username():
 ]
 
     name = random.choice(names)
-    name_part = name[:random.randint(3, 7)]
-    numbers = str(random.randint(999, 9999))
-    letters = ''.join(random.choices(string.ascii_lowercase, k=3))
+    name_part = name[:random.randint(6, 8)]
+    numbers = str(random.randint(99, 999))
+    letters = ''.join(random.choices(string.ascii_lowercase, k=2))
     
     return f"{name_part}{numbers}_{letters}"
 
