@@ -144,10 +144,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 'message_id': sent_message.message_id
             }
         )
-    except Exception as e:
-        await update.message.reply_text(
-            "Please send your 2FA secret key to get OTP, or use commands like /start, /gen, /setpassword."
-        )
+    except Exception:
+        pass  # Don't send any error message for invalid keys
 
 def main():
     if not BOT_TOKEN:
