@@ -117,14 +117,32 @@ async def set_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='Markdown'
     )
 
+async def delete_message(context: ContextTypes.DEFAULT_TYPE):
+    job = context.job
+    chat_id = job.data['chat_id']
+    message_id = job.data['message_id']
+    try:
+        await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+    except Exception:
+        pass  # Ignore errors, e.g., if message already deleted
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message_text = update.message.text.strip().replace(" ", "").upper()
     try:
         otp = get_totp_token(message_text)
-        await update.message.reply_text(
+        sent_message = await update.message.reply_text(
             f"🔐 Your OTP: `{otp}`\n\n"
             "(Valid for 30 seconds)",
             parse_mode='Markdown'
+        )
+        # Schedule message deletion after 1 minute (60 seconds)
+        context.job_queue.run_once(
+            delete_message,
+            when=60,
+            data={
+                'chat_id': sent_message.chat_id,
+                'message_id': sent_message.message_id
+            }
         )
     except Exception as e:
         await update.message.reply_text(
